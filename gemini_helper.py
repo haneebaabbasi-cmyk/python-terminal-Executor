@@ -1,26 +1,15 @@
+# gemini_helper.py
+# Updated import for Google Gemini / GenAI
+
 import os
 from google import genai
-from dotenv import load_dotenv
 
-# Load environment variables from .env
-load_dotenv()
-
-# Get Gemini API key
-API_KEY = os.getenv("GEMINI_API_KEY")
+# Initialize the client
+client = genai.Client()  # Make sure your API key is set in environment variables
 
 def call_gemini(prompt: str) -> str:
     """
-    Sends a prompt to Gemini 2.5 Flash and returns the response text.
+    Sends a prompt to Gemini AI and returns the response.
     """
-    client = genai.Client(api_key=API_KEY)
-
-    response = client.models.generate_content(
-        model="gemini-2.5-flash",
-        contents=[{"role": "user", "parts": [{"text": prompt}]}],
-    )
-
-    text = ""
-    for candidate in response.candidates:
-        for part in candidate.content.parts:
-            text += part.text
-    return text
+    response = client.generate_text(prompt=prompt)
+    return response.text
