@@ -1,15 +1,25 @@
-# gemini_helper.py
-# Updated import for Google Gemini / GenAI
-
 import os
-from google import genai
+from dotenv import load_dotenv
+import google.generativeai as genai
 
-# Initialize the client
-client = genai.Client()  # Make sure your API key is set in environment variables
+# Load .env locally (ignored on cloud)
+load_dotenv()
+
+API_KEY = os.getenv("GEMINI_API_KEY")
+
+if not API_KEY:
+    raise ValueError("❌ GEMINI_API_KEY missing")
+
+genai.configure(api_key=API_KEY)
+
+model = genai.GenerativeModel("gemini-2.5-flash")
 
 def call_gemini(prompt: str) -> str:
-    """
-    Sends a prompt to Gemini AI and returns the response.
-    """
-    response = client.generate_text(prompt=prompt)
-    return response.text
+    response = model.generate_content(
+        prompt,
+        generation_config={
+            "temperature": 0.2,
+            "max_output_tokens": 600
+        }
+    )
+    return response.text.strip()
